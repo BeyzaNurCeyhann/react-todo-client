@@ -1,8 +1,18 @@
+import { useSelector } from 'react-redux';
+
 function TodoListPage() {
-    return (
-      <div className="p-6 text-2xl font-bold text-blue-700">
-        Todo List Page
-      </div>
-    );
-  }
-  export default TodoListPage;
+  const todos = useSelector((state) => state.todos.items);
+
+  return (
+    <div className="p-4">
+      <h1 className="text-xl font-bold mb-4">Todo Listesi</h1>
+      <ul className="list-disc pl-5">
+        {todos.map((todo, i) => (
+          <li key={i}>{todo.title}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default TodoListPage;
