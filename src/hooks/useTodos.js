@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchTodos } from '../services/todoService';
-import { setTodos, setLoading, setError } from '../store/slices/todoSlice';
+import { fetchTodos, searchTodos } from '../services/todoService';
+import { setTodos, setMeta, setLoading, setError } from '../store/slices/todoSlice';
 
-export const useTodos = (params = {}) => {
+export const useTodos = (filters = {}, query = '', pagination = {}) => {
   const dispatch = useDispatch();
   const { items, loading, error } = useSelector((state) => state.todos);
 
@@ -11,17 +11,23 @@ export const useTodos = (params = {}) => {
     const loadTodos = async () => {
       try {
         dispatch(setLoading(true));
-        const response = await fetchTodos(params);
 
-       
+        const allParams = { ...filters, ...pagination };
+
+        const response = query
+          ? await searchTodos(query,pagination) 
+          : await fetchTodos(allParams); 
+
+        console.log('RESPONSE:', response); 
+
         if (response.status === 'success') {
-          dispatch(setTodos(response.data)); 
+          dispatch(setTodos(response.data));
+          dispatch(setMeta(response.meta|| null));
+          dispatch(setError(null));
         } else {
           dispatch(setError('API başarısız yanıt verdi.'));
         }
-
       } catch (err) {
-        console.error('Todo çekme hatası:', err);
         dispatch(setError(err.message || "Todo'lar yüklenemedi"));
       } finally {
         dispatch(setLoading(false));
@@ -29,7 +35,7 @@ export const useTodos = (params = {}) => {
     };
 
     loadTodos();
-  }, [dispatch, JSON.stringify(params)]); 
+  }, [dispatch, JSON.stringify(filters), query, JSON.stringify(pagination)]);
 
   return { todos: items, loading, error };
 };

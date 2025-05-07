@@ -13,12 +13,19 @@ export const fetchTodoById = async (id) => {
 };
 
 export const createTodo = async (data) => {
-  const response = await axios.post(`${API_URL}/todos, data`);
+  const response = await axios.post(`${API_URL}/todos`, data);
   return response.data;
 };
 
 export const updateTodo = async (id, data) => {
-  const response = await axios.put(`${API_URL}/todos/${id}, data`);
+  const response = await axios.put(`${API_URL}/todos/${id}`, data);
+  return response.data;
+};
+
+export const updateTodoStatus = async (id, newStatus) => {
+  const response = await axios.patch(`${API_URL}/todos/${id}/status`, {
+    status: newStatus,
+  });
   return response.data;
 };
 
@@ -27,9 +34,9 @@ export const deleteTodo = async (id) => {
   return response.data;
 };
 
-export const searchTodos = async (query) => {
-    const response = await axios.get(`${API_URL}/todos/search`, {
-      params: { q: query },
-    });
-    return response.data;
-  };
+export const searchTodos = async (query, pagination = {}) => {
+  const response = await axios.get(`${API_URL}/todos/search`, {
+    params: { q: query, ...pagination }
+  });
+  return response.data;
+};
