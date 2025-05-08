@@ -1,0 +1,13 @@
+# Tüm metin dosyaları için LF kullan
+* text eol=lf
+
+# Binary dosyaları satır sonu kontrolüne dahil etme
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
