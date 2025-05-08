@@ -1,22 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTodos } from '../hooks/useTodos';
-import { updateTodoStatus, deleteTodo } from '../services/todoService'; // ✅ deleteTodo eklendi
+import { updateTodoStatus, deleteTodo, updateTodo } from '../services/todoService';
 import {
   updateTodoStatusLocally,
-  removeTodo, // ✅ slice'dan removeTodo eklendi
+  removeTodo,
 } from '../store/slices/todoSlice';
 
 import TodoList from '../components/todo/TodoList';
 import TodoFilter from '../components/todo/TodoFilter';
 import Pagination from '../components/common/Pagination';
-
+import TodoForm from '../components/todo/TodoForm';
 function TodoListPage() {
   const dispatch = useDispatch();
-
   const [pagination, setPagination] = useState({ page: 1, limit: 5 });
   const [search, setSearch] = useState('');
   const [query, setQuery] = useState('');
+  const [editingTodo, setEditingTodo] = useState(null);
 
   const [filters, setFilters] = useState({
     sort: 'due_date',
@@ -55,8 +55,6 @@ function TodoListPage() {
   const handleStatusChange = async (id, newStatus) => {
     try {
       const response = await updateTodoStatus(id, newStatus);
-      console.log('🔥 API Yanıtı:', response);
-
       if (response.status === 'success') {
         dispatch(updateTodoStatusLocally(response.data));
       } else {
@@ -68,7 +66,6 @@ function TodoListPage() {
     }
   };
 
-  // ✅ Silme işlemi burada
   const handleDelete = async (id) => {
     if (!window.confirm('Bu todo silinsin mi?')) return;
     try {
@@ -76,6 +73,17 @@ function TodoListPage() {
       dispatch(removeTodo(id));
     } catch (err) {
       alert('Silme işlemi başarısız oldu');
+      console.error(err);
+    }
+  };
+
+  const handleUpdateSubmit = async (updatedData) => {
+    try {
+      await updateTodo(updatedData.id, updatedData);
+      setEditingTodo(null);
+      setQuery((q) => q);
+    } catch (err) {
+      alert('Güncelleme başarısız');
       console.error(err);
     }
   };
@@ -110,7 +118,8 @@ function TodoListPage() {
       <TodoList
         todos={todos}
         onStatusChange={handleStatusChange}
-        onDelete={handleDelete} // ✅ gönderildi
+        onDelete={handleDelete}
+        onEdit={(todo) => setEditingTodo(todo)}
       />
 
       <Pagination
@@ -118,6 +127,25 @@ function TodoListPage() {
         onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
       />
+
+
+      {editingTodo && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow max-w-lg w-full">
+            <TodoForm
+              initialData={editingTodo}
+              categories={[]}
+              onSubmit={handleUpdateSubmit}
+            />
+            <button
+              onClick={() => setEditingTodo(null)}
+              className="mt-4 text-sm text-gray-500 hover:underline"
+            >
+              İptal
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

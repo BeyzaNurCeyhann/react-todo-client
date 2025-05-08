@@ -1,4 +1,4 @@
-function TodoItem({ todo, onStatusChange, onDelete }) {
+function TodoItem({ todo, onStatusChange, onDelete, onEdit }) {
   const { id, title, description, due_date, created_at, status, priority, categories } = todo;
 
   const formatDate = (isoString) =>
@@ -49,7 +49,6 @@ function TodoItem({ todo, onStatusChange, onDelete }) {
         </div>
 
         <div className="flex items-center gap-2">
-        
           <select
             value={status}
             onChange={(e) => onStatusChange?.(id, e.target.value)}
@@ -62,7 +61,13 @@ function TodoItem({ todo, onStatusChange, onDelete }) {
             ))}
           </select>
 
-          
+          <button
+            onClick={() => onEdit?.(todo)}
+            className="px-3 py-1 bg-indigo-500 text-white text-sm rounded hover:bg-indigo-600"
+          >
+            Düzenle
+          </button>
+
           <button
             onClick={() => onDelete?.(id)}
             className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600"

@@ -1,6 +1,6 @@
 import TodoItem from './TodoItem';
 
-function TodoList({ todos, onStatusChange, onDelete }) {
+function TodoList({ todos, onStatusChange, onDelete, onEdit }) {
   if (!todos || todos.length === 0) {
     return <div className="text-center text-gray-500">Kayıt bulunamadı.</div>;
   }
@@ -13,6 +13,7 @@ function TodoList({ todos, onStatusChange, onDelete }) {
           todo={todo}
           onStatusChange={onStatusChange}
           onDelete={onDelete}
+          onEdit={onEdit}
         />
       ))}
     </div>
