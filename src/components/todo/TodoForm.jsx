@@ -10,7 +10,9 @@ const validationSchema = Yup.object().shape({
     description: Yup.string(),
     status: Yup.string().oneOf(['pending', 'in_progress', 'completed', 'cancelled']),
     priority: Yup.string().oneOf(['low', 'medium', 'high']),
-    due_date: Yup.date().nullable(),
+    due_date: Yup.date()
+        .required('Bitiş tarihi zorunludur')
+        .min(new Date(), 'Bugünden önce bir tarih seçilemez'),
     category_ids: Yup.array()
         .of(Yup.number())
         .min(1, 'En az bir kategori seçmelisiniz'),
@@ -39,13 +41,15 @@ function TodoForm({ initialData = {}, onSubmit }) {
         description: '',
         status: 'pending',
         priority: 'medium',
-        due_date: '',
-        category_ids: [],
-        ...initialData,
-        category_ids: initialData?.categories?.map(c => c.id) || [],
-        due_date: initialData?.due_date?.slice(0, 10) || '',
-    };
 
+        category_ids: Array.isArray(initialData?.categories)
+            ? initialData.categories.map((c) => c.id)
+            : [],
+
+        due_date: initialData?.due_date?.slice(0, 10) || '',
+
+        ...initialData
+    };
     return (
         <Formik
             enableReinitialize
@@ -105,6 +109,7 @@ function TodoForm({ initialData = {}, onSubmit }) {
                             name="due_date"
                             className="w-full border px-3 py-2 rounded"
                         />
+                         <ErrorMessage name="due_date" component="div" className="text-red-600 text-sm mt-1" />
                     </div>
 
                     <div>
