@@ -1,5 +1,8 @@
-function TodoItem({ todo, onStatusChange, onDelete, onEdit }) {
+import { useNavigate } from 'react-router-dom';
+
+function TodoItem({ todo, onStatusChange, onDelete }) {
   const { id, title, description, due_date, created_at, status, priority, categories } = todo;
+  const navigate = useNavigate();
 
   const formatDate = (isoString) =>
     new Date(isoString).toLocaleDateString('tr-TR', {
@@ -62,7 +65,7 @@ function TodoItem({ todo, onStatusChange, onDelete, onEdit }) {
           </select>
 
           <button
-            onClick={() => onEdit?.(todo)}
+            onClick={() => navigate(`/todos/${id}/edit`)}
             className="px-3 py-1 bg-indigo-500 text-white text-sm rounded hover:bg-indigo-600"
           >
             Düzenle

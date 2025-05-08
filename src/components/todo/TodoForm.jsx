@@ -1,18 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 import { fetchCategories } from '../../services/categoryService';
+
+const validationSchema = Yup.object().shape({
+    title: Yup.string()
+        .max(255, 'Başlık en fazla 255 karakter olabilir')
+        .required('Başlık zorunludur'),
+    description: Yup.string(),
+    status: Yup.string().oneOf(['pending', 'in_progress', 'completed', 'cancelled']),
+    priority: Yup.string().oneOf(['low', 'medium', 'high']),
+    due_date: Yup.date().nullable(),
+    category_ids: Yup.array()
+        .of(Yup.number())
+        .min(1, 'En az bir kategori seçmelisiniz'),
+});
 
 function TodoForm({ initialData = {}, onSubmit }) {
     const [categories, setCategories] = useState([]);
-
-    const [form, setForm] = useState({
-        title: '',
-        description: '',
-        status: 'pending',
-        priority: 'medium',
-        due_date: '',
-        category_ids: [],
-        ...initialData,
-    });
 
     useEffect(() => {
         const loadCategories = async () => {
@@ -20,15 +25,6 @@ function TodoForm({ initialData = {}, onSubmit }) {
                 const response = await fetchCategories();
                 if (response.status === 'success') {
                     setCategories(response.data);
-
-                    if (initialData && initialData.categories) {
-                        const ids = initialData.categories.map((cat) => cat.id);
-                        setForm((prev) => ({
-                            ...prev,
-                            ...initialData,
-                            category_ids: ids,
-                        }));
-                    }
                 }
             } catch (error) {
                 console.error('Kategori çekme hatası:', error);
@@ -36,142 +32,111 @@ function TodoForm({ initialData = {}, onSubmit }) {
         };
 
         loadCategories();
-    }, [initialData.id]);
+    }, []);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setForm((prev) => ({ ...prev, [name]: value }));
+    const initialValues = {
+        title: '',
+        description: '',
+        status: 'pending',
+        priority: 'medium',
+        due_date: '',
+        category_ids: [],
+        ...initialData,
+        category_ids: initialData?.categories?.map(c => c.id) || [],
+        due_date: initialData?.due_date?.slice(0, 10) || '',
     };
-
-    const handleCategoryCheckboxChange = (id) => {
-        setForm((prev) => {
-            const updated = prev.category_ids.includes(id)
-                ? prev.category_ids.filter((catId) => catId !== id)
-                : [...prev.category_ids, id];
-            return { ...prev, category_ids: updated };
-        });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        const preparedForm = {
-            ...form,
-            category_ids: form.category_ids.map((cat) =>
-                typeof cat === 'object' ? cat.id : Number(cat)
-            ),
-        };
-
-        onSubmit?.(preparedForm);
-    };
-
-    const handleUpdateSubmit = async (formData) => {
-        try {
-            const updated = await updateTodo(formData.id, formData);
-            dispatch(updateTodoLocally(updated.data));
-            setEditingTodo(null);
-            toast.success('Todo başarıyla güncellendi!');
-        } catch (error) {
-            toast.error('Güncelleme başarısız.');
-            console.error(error);
-        }
-    };
-
-    if (!form.title && !form.description && form.category_ids.length === 0) {
-        return null;
-    }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-                <label className="block font-medium">Başlık</label>
-                <input
-                    type="text"
-                    name="title"
-                    value={form.title}
-                    onChange={handleChange}
-                    className="w-full border rounded px-3 py-2"
-                    required
-                />
-            </div>
+        <Formik
+            enableReinitialize
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={(values) => {
+                onSubmit({
+                    ...values,
+                    category_ids: values.category_ids.map(Number),
+                });
+            }}
+        >
+            {({ values, handleChange, setFieldValue }) => (
+                <Form className="space-y-4">
+                    <div>
+                        <label className="block font-medium">Başlık</label>
+                        <Field
+                            name="title"
+                            className="w-full border px-3 py-2 rounded"
+                        />
+                        <ErrorMessage name="title" component="div" className="text-red-600 text-sm mt-1" />
+                    </div>
 
+                    <div>
+                        <label className="block font-medium">Açıklama</label>
+                        <Field
+                            as="textarea"
+                            name="description"
+                            className="w-full border px-3 py-2 rounded"
+                        />
+                        <ErrorMessage name="description" component="div" className="text-red-600 text-sm mt-1" />
+                    </div>
 
-            <div>
-                <label className="block font-medium">Açıklama</label>
-                <textarea
-                    name="description"
-                    value={form.description}
-                    onChange={handleChange}
-                    className="w-full border rounded px-3 py-2"
-                />
-            </div>
+                    <div>
+                        <label className="block font-medium">Durum</label>
+                        <Field as="select" name="status" className="w-full border px-3 py-2 rounded">
+                            <option value="pending">Bekliyor</option>
+                            <option value="in_progress">Devam Ediyor</option>
+                            <option value="completed">Tamamlandı</option>
+                            <option value="cancelled">İptal Edildi</option>
+                        </Field>
+                    </div>
 
+                    <div>
+                        <label className="block font-medium">Öncelik</label>
+                        <Field as="select" name="priority" className="w-full border px-3 py-2 rounded">
+                            <option value="low">Düşük</option>
+                            <option value="medium">Orta</option>
+                            <option value="high">Yüksek</option>
+                        </Field>
+                    </div>
 
-            <div>
-                <label className="block font-medium">Durum</label>
-                <select name="status" value={form.status} onChange={handleChange} className="w-full border px-3 py-2 rounded">
-                    <option value="pending">Bekliyor</option>
-                    <option value="in_progress">Devam Ediyor</option>
-                    <option value="completed">Tamamlandı</option>
-                    <option value="cancelled">İptal Edildi</option>
-                </select>
-            </div>
+                    <div>
+                        <label className="block font-medium">Bitiş Tarihi</label>
+                        <Field
+                            type="date"
+                            name="due_date"
+                            className="w-full border px-3 py-2 rounded"
+                        />
+                    </div>
 
+                    <div>
+                        <label className="block font-medium mb-1">Kategoriler</label>
+                        <div className="grid grid-cols-2 gap-2">
+                            {categories.map(cat => (
+                                <label key={cat.id} className="flex items-center space-x-2">
+                                    <input
+                                        type="checkbox"
+                                        name="category_ids"
+                                        value={cat.id}
+                                        checked={values.category_ids.includes(cat.id)}
+                                        onChange={() => {
+                                            const set = new Set(values.category_ids);
+                                            if (set.has(cat.id)) set.delete(cat.id);
+                                            else set.add(cat.id);
+                                            setFieldValue('category_ids', Array.from(set));
+                                        }}
+                                    />
+                                    <span>{cat.name}</span>
+                                </label>
+                            ))}
+                        </div>
+                        <ErrorMessage name="category_ids" component="div" className="text-red-600 text-sm mt-1" />
+                    </div>
 
-            <div>
-                <label className="block font-medium">Öncelik</label>
-                <select name="priority" value={form.priority} onChange={handleChange} className="w-full border px-3 py-2 rounded">
-                    <option value="low">Düşük</option>
-                    <option value="medium">Orta</option>
-                    <option value="high">Yüksek</option>
-                </select>
-            </div>
-
-            <div>
-                <label className="block font-medium">Bitiş Tarihi</label>
-                <input
-                    type="date"
-                    name="due_date"
-                    value={form.due_date?.slice(0, 10) || ''}
-                    onChange={handleChange}
-                    className="w-full border rounded px-3 py-2"
-                />
-            </div>
-
-
-            <div>
-                <label className="block font-medium mb-1">Kategoriler</label>
-
-                {console.log("form.category_ids", form.category_ids)}
-                {console.log("ncategories", categories)}
-
-                <div className="grid grid-cols-2 gap-2">
-                    {categories.map((cat) => {
-                        const selectedCategoryIds = form.category_ids.map((c) =>
-                            typeof c === 'object' ? c.id : Number(c)
-                        );
-
-                        const isChecked = selectedCategoryIds.includes(cat.id);
-
-                        return (
-                            <label key={cat.id} className="flex items-center space-x-2">
-                                <input
-                                    type="checkbox"
-                                    value={cat.id}
-                                    checked={isChecked}
-                                    onChange={() => handleCategoryCheckboxChange(cat.id)}
-                                />
-                                <span>{cat.name}</span>
-                            </label>
-                        );
-                    })}
-                </div>
-            </div>
-
-            <button type="submit" className="px-4 py-2 bg-green-600 text-white rounded">
-                Kaydet
-            </button>
-        </form>
+                    <button type="submit" className="px-4 py-2 bg-green-600 text-white rounded">
+                        Kaydet
+                    </button>
+                </Form>
+            )}
+        </Formik>
     );
 }
 

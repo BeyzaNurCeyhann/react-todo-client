@@ -5,6 +5,10 @@ import Navbar from './components/common/Navbar';
 import Dashboard from './pages/Dashboard';
 import TodoListPage from './pages/TodoListPage';
 import TodoDetailPage from './pages/TodoDetailPage';
+// Örneğin: src/main.jsx veya src/App.jsx içinde
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
+
 
 function App() {
   return (
@@ -17,9 +21,13 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/todos" element={<TodoListPage />} />
             <Route path="/todos/:id" element={<TodoDetailPage />} />
+            <Route path="/todos/:id/edit" element={<TodoDetailPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
+
+        {/* 🟢 ToastContainer burada JSX içinde olmalı */}
+        <ToastContainer />
       </Router>
     </Provider>
   );
