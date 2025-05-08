@@ -40,3 +40,10 @@ export const searchTodos = async (query, pagination = {}) => {
   });
   return response.data;
 };
+
+export const fetchUpcomingTodos = async () => {
+  const response = await axios.get(`${API_URL}/todos`, {
+    params: { due_soon: true }, 
+  });
+  return response.data;
+};
