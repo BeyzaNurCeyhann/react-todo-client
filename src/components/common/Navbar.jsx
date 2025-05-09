@@ -3,10 +3,14 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 function Navbar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+
   const token = localStorage.getItem('token');
+  const userString = localStorage.getItem('user');
+  const user = userString ? JSON.parse(userString) : null;
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     navigate('/login');
   };
 
@@ -23,9 +27,13 @@ function Navbar() {
         <div className="flex space-x-6">
           <Link to="/" className={linkClass('/')}>Dashboard</Link>
           <Link to="/todos" className={linkClass('/todos')}>Todo Listesi</Link>
-          <Link to="/categories" className={linkClass('/categories')}>
-            Kategoriler
-          </Link>
+
+          {/* 🔐 Sadece admin kullanıcılar kategorileri görebilir */}
+          {user?.role === 'admin' && (
+            <Link to="/categories" className={linkClass('/categories')}>
+              Kategoriler
+            </Link>
+          )}
         </div>
 
         {/* Sağ taraf butonlar */}

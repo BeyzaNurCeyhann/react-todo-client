@@ -38,6 +38,7 @@ export default function LoginPage() {
                     toast.success('Giriş başarılı!');
                 }
                 localStorage.setItem('token', res.data.token);
+                localStorage.setItem('user', JSON.stringify(res.data.user));
                 navigate('/dashboard');
             } catch (error) {
                 if (error.response?.data?.errors) {
