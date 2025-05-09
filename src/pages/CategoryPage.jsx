@@ -4,6 +4,7 @@ import {
   createCategory,
   updateCategory,
   deleteCategory,
+  fetchCategoryTodos
 } from '../services/categoryService';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
@@ -35,10 +36,10 @@ function CategoryPage() {
     e.preventDefault();
     try {
       if (editingId) {
-        const res = await updateCategory(editingId, form);
+        await updateCategory(editingId, form);
         toast.success('Kategori güncellendi ✅');
       } else {
-        const res = await createCategory(form);
+        await createCategory(form);
         toast.success('Kategori oluşturuldu ✅');
       }
       setForm({ name: '', color: '#000000' });
@@ -78,6 +79,29 @@ function CategoryPage() {
     }
   };
 
+  const handleShowTodos = async (categoryId) => {
+    try {
+      const res = await fetchCategoryTodos(categoryId);
+      if (res.status === 'success') {
+        const todoList = res.data.length
+          ? `<ul class="text-left">${res.data.map(todo => `<li>• ${todo.title}</li>`).join('')}</ul>`
+          : '<p>Bu kategoriye ait görev yok.</p>';
+
+        Swal.fire({
+          title: 'Kategori Görevleri',
+          html: todoList,
+          confirmButtonText: 'Kapat',
+          width: 500
+        });
+      } else {
+        throw new Error(res.message);
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire('Hata', 'Todo bilgileri alınamadı.', 'error');
+    }
+  };
+
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-8">
       <h1 className="text-2xl font-bold mb-4 text-center">📁 Kategori Yönetimi</h1>
@@ -105,10 +129,7 @@ function CategoryPage() {
           />
         </div>
 
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
+        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
           {editingId ? 'Güncelle' : 'Ekle'}
         </button>
 
@@ -129,15 +150,9 @@ function CategoryPage() {
       {/* Kategori Listesi */}
       <div className="space-y-2">
         {categories.map((cat) => (
-          <div
-            key={cat.id}
-            className="bg-gray-50 border border-gray-200 rounded p-3 flex justify-between items-center"
-          >
+          <div key={cat.id} className="bg-gray-50 border border-gray-200 rounded p-3 flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <div
-                className="w-5 h-5 rounded-full"
-                style={{ backgroundColor: cat.color }}
-              ></div>
+              <div className="w-5 h-5 rounded-full" style={{ backgroundColor: cat.color }}></div>
               <span className="font-medium">{cat.name}</span>
             </div>
 
@@ -147,6 +162,12 @@ function CategoryPage() {
                 className="px-3 py-1 text-sm bg-yellow-400 text-white rounded hover:bg-yellow-500"
               >
                 Düzenle
+              </button>
+              <button
+                onClick={() => handleShowTodos(cat.id)}
+                className="px-3 py-1 text-sm bg-indigo-500 text-white rounded hover:bg-indigo-600"
+              >
+                Todos
               </button>
               <button
                 onClick={() => handleDelete(cat.id)}
