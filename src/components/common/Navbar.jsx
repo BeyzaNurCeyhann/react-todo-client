@@ -1,7 +1,14 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 function Navbar() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const token = localStorage.getItem('token');
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
 
   const linkClass = (path) =>
     pathname === path
@@ -21,10 +28,20 @@ function Navbar() {
           </Link>
         </div>
 
-        {/* Sağ taraf buton */}
-        <Link to="/todos/new" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-          + Yeni Todo
-        </Link>
+        {/* Sağ taraf butonlar */}
+        {token && (
+          <div className="flex gap-3 items-center">
+            <Link to="/todos/new" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+              + Yeni Todo
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            >
+              Çıkış Yap
+            </button>
+          </div>
+        )}
       </div>
     </nav>
   );

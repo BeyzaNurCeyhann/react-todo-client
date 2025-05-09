@@ -109,6 +109,9 @@ function Dashboard() {
             {/* Yaklaşan Todo’lar */}
             <div>
                 <h2 className="text-xl font-semibold mt-10 mb-4">Yaklaşan Todo’lar</h2>
+                <p className="text-sm text-gray-500 mb-4">
+                    Bitiş tarihine 7 gün kalan todo'lar listelenmektedir.
+                </p>
                 {!upcomingTodos ? (
                     <div className="text-gray-500">Yükleniyor...</div>
                 ) : upcomingTodos.length === 0 ? (

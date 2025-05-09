@@ -7,9 +7,10 @@ import TodoListPage from './pages/TodoListPage';
 import TodoDetailPage from './pages/TodoDetailPage';
 import AddTodoPage from './pages/AddTodoPage';
 import CategoryPage from './pages/CategoryPage';
-import 'react-toastify/dist/ReactToastify.css';
+import LoginPage from './pages/LoginPage';
+import ProtectedRoute from './components/common/ProtectedRoute';
 import { ToastContainer } from 'react-toastify';
-
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
@@ -18,13 +19,44 @@ function App() {
         <Navbar />
         <div className="pt-20 px-4 max-w-6xl mx-auto">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/todos" element={<TodoListPage />} />
-            <Route path="/todos/:id" element={<TodoDetailPage />} />
-            <Route path="/todos/:id/edit" element={<TodoDetailPage />} />
-            <Route path="/todos/new" element={<AddTodoPage />} />
-            <Route path="/categories" element={<CategoryPage />} />
+            <Route path="/login" element={<LoginPage />} />
+
+            <Route path="/" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/todos" element={
+              <ProtectedRoute>
+                <TodoListPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/todos/:id" element={
+              <ProtectedRoute>
+                <TodoDetailPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/todos/:id/edit" element={
+              <ProtectedRoute>
+                <TodoDetailPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/todos/new" element={
+              <ProtectedRoute>
+                <AddTodoPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/categories" element={
+              <ProtectedRoute>
+                <CategoryPage />
+              </ProtectedRoute>
+            } />
+
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>

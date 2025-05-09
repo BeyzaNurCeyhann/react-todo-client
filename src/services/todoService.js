@@ -1,49 +1,47 @@
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+import axios from '../utils/axiosInstance';
 
 export const fetchTodos = async (params = {}) => {
-  const response = await axios.get(`${API_URL}/todos`, { params });
+  const response = await axios.get('/todos', { params });
   return response.data;
 };
 
 export const fetchTodoById = async (id) => {
-  const response = await axios.get(`${API_URL}/todos/${id}`);
+  const response = await axios.get(`/todos/${id}`);
   return response.data;
 };
 
 export const createTodo = async (data) => {
-  const response = await axios.post(`${API_URL}/todos`, data);
+  const response = await axios.post('/todos', data);
   return response.data;
 };
 
 export const updateTodo = async (id, data) => {
-  const response = await axios.put(`${API_URL}/todos/${id}`, data);
+  const response = await axios.put(`/todos/${id}`, data);
   return response.data;
 };
 
 export const updateTodoStatus = async (id, newStatus) => {
-  const response = await axios.patch(`${API_URL}/todos/${id}/status`, {
+  const response = await axios.patch(`/todos/${id}/status`, {
     status: newStatus,
   });
   return response.data;
 };
 
 export const deleteTodo = async (id) => {
-  const response = await axios.delete(`${API_URL}/todos/${id}`);
+  const response = await axios.delete(`/todos/${id}`);
   return response.data;
 };
 
 export const searchTodos = async (query, pagination = {}) => {
-  const response = await axios.get(`${API_URL}/todos/search`, {
+  const response = await axios.get('/todos/search', {
     params: { q: query, ...pagination }
   });
   return response.data;
 };
 
 export const fetchUpcomingTodos = async () => {
-  const response = await axios.get(`${API_URL}/todos`, {
-    params: { due_soon: true }, 
+  const response = await axios.get('/todos', {
+    params: { due_soon: true },
   });
   return response.data;
 };

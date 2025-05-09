@@ -1,13 +1,11 @@
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+import axios from '../utils/axiosInstance';
 
 export const fetchStatusStats = async () => {
-  const response = await axios.get(`${API_URL}/todos`);
+  const response = await axios.get('/stats/todos'); 
   return response.data;
 };
 
 export const fetchPriorityStats = async () => {
-  const response = await axios.get(`${API_URL}/priorities`);
+  const response = await axios.get('/stats/priorities'); 
   return response.data;
 };
