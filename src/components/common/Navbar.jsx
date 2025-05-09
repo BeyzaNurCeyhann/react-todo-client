@@ -16,6 +16,9 @@ function Navbar() {
         <div className="flex space-x-6">
           <Link to="/" className={linkClass('/')}>Dashboard</Link>
           <Link to="/todos" className={linkClass('/todos')}>Todo Listesi</Link>
+          <Link to="/categories" className={linkClass('/categories')}>
+            Kategoriler
+          </Link>
         </div>
 
         {/* Sağ taraf buton */}

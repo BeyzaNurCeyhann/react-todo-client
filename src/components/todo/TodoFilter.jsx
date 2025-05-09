@@ -20,14 +20,15 @@ function TodoFilter({ onChange }) {
   }, [status, priority, sort, order, limit]);
 
   return (
-    <div className="flex flex-wrap gap-4 items-end mb-6">
+    <div className="bg-gray-50 p-4 rounded-md shadow-sm border border-gray-200 space-y-4 sm:space-y-0 sm:flex sm:flex-wrap sm:gap-6 items-end">
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Durum</label>
+      {/* Durum */}
+      <div className="flex-1 min-w-[160px]">
+        <label className="block text-sm font-medium text-gray-700 mb-1">Durum</label>
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+          className="w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">Tümü</option>
           <option value="pending">Bekliyor</option>
@@ -37,12 +38,13 @@ function TodoFilter({ onChange }) {
         </select>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Öncelik</label>
+      {/* Öncelik */}
+      <div className="flex-1 min-w-[160px]">
+        <label className="block text-sm font-medium text-gray-700 mb-1">Öncelik</label>
         <select
           value={priority}
           onChange={(e) => setPriority(e.target.value)}
-          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+          className="w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">Tümü</option>
           <option value="low">Düşük</option>
@@ -51,12 +53,13 @@ function TodoFilter({ onChange }) {
         </select>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Sıralama Alanı</label>
+      {/* Sıralama Alanı */}
+      <div className="flex-1 min-w-[160px]">
+        <label className="block text-sm font-medium text-gray-700 mb-1">Sıralama Alanı</label>
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value)}
-          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+          className="w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="due_date">Teslim Tarihi</option>
           <option value="priority">Öncelik</option>
@@ -64,18 +67,18 @@ function TodoFilter({ onChange }) {
         </select>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Sıralama</label>
+      {/* Sıralama */}
+      <div className="flex-1 min-w-[160px]">
+        <label className="block text-sm font-medium text-gray-700 mb-1">Sıralama Yönü</label>
         <select
           value={order}
           onChange={(e) => setOrder(e.target.value)}
-          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+          className="w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="asc">Artan</option>
           <option value="desc">Azalan</option>
         </select>
       </div>
-
 
     </div>
   );

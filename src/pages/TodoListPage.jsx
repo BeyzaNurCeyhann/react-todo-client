@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 import { useTodos } from '../hooks/useTodos';
 import { updateTodoStatus, deleteTodo, updateTodo } from '../services/todoService';
 import {
@@ -11,6 +13,7 @@ import TodoList from '../components/todo/TodoList';
 import TodoFilter from '../components/todo/TodoFilter';
 import Pagination from '../components/common/Pagination';
 import TodoForm from '../components/todo/TodoForm';
+
 function TodoListPage() {
   const dispatch = useDispatch();
   const [pagination, setPagination] = useState({ page: 1, limit: 5 });
@@ -57,22 +60,36 @@ function TodoListPage() {
       const response = await updateTodoStatus(id, newStatus);
       if (response.status === 'success') {
         dispatch(updateTodoStatusLocally(response.data));
+        toast.success('Durum güncellendi');
       } else {
         throw new Error(response.message || 'API başarısız yanıt verdi');
       }
     } catch (err) {
-      alert('Durum güncellenemedi');
+      toast.error('Durum güncellenemedi');
       console.error('Hata:', err);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Bu todo silinsin mi?')) return;
+    const result = await Swal.fire({
+      title: 'Emin misiniz?',
+      text: 'Bu todo kalıcı olarak silinecek!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Evet, sil!',
+      cancelButtonText: 'Vazgeç',
+      confirmButtonColor: '#e3342f',
+      cancelButtonColor: '#6c757d',
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
       await deleteTodo(id);
       dispatch(removeTodo(id));
+      toast.success('Todo başarıyla silindi');
     } catch (err) {
-      alert('Silme işlemi başarısız oldu');
+      toast.error('Silme işlemi başarısız');
       console.error(err);
     }
   };
@@ -83,7 +100,7 @@ function TodoListPage() {
       setEditingTodo(null);
       setQuery((q) => q);
     } catch (err) {
-      alert('Güncelleme başarısız');
+      toast.error('Güncelleme başarısız');
       console.error(err);
     }
   };
@@ -94,23 +111,26 @@ function TodoListPage() {
         Todo Listesi
       </h1>
 
-      <form onSubmit={handleSearch} className="mb-4 flex gap-2">
+      {/* Arama Alanı */}
+      <form onSubmit={handleSearch} className="mb-4 flex gap-2 items-center">
         <input
           type="text"
           placeholder="Başlık veya açıklama ara..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 border border-gray-300 rounded-md px-3 py-2"
+          className="flex-1 border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <button
           type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
         >
           Ara
         </button>
       </form>
 
-      <TodoFilter onChange={handleFilterChange} />
+      <div className="mb-6">
+        <TodoFilter onChange={handleFilterChange} />
+      </div>
 
       {loading && <div>Yükleniyor...</div>}
       {error && <div className="text-red-600">{error}</div>}
@@ -127,7 +147,6 @@ function TodoListPage() {
         onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
       />
-
 
       {editingTodo && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">

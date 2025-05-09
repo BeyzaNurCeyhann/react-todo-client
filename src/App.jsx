@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import TodoListPage from './pages/TodoListPage';
 import TodoDetailPage from './pages/TodoDetailPage';
 import AddTodoPage from './pages/AddTodoPage';
+import CategoryPage from './pages/CategoryPage';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 
@@ -15,14 +16,15 @@ function App() {
     <Provider store={store}>
       <Router>
         <Navbar />
-        <div className="pt-20 px-4 max-w-6xl mx-auto"> 
+        <div className="pt-20 px-4 max-w-6xl mx-auto">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/todos" element={<TodoListPage />} />
             <Route path="/todos/:id" element={<TodoDetailPage />} />
             <Route path="/todos/:id/edit" element={<TodoDetailPage />} />
-             <Route path="/todos/new" element={<AddTodoPage />} />
+            <Route path="/todos/new" element={<AddTodoPage />} />
+            <Route path="/categories" element={<CategoryPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>

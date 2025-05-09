@@ -19,7 +19,7 @@ function TodoItem({ todo, onStatusChange, onDelete }) {
   ];
 
   return (
-    <div className="h-[250px] bg-white shadow-md rounded p-4 border border-gray-200 flex flex-col justify-between">
+    <div className="h-[200px] bg-white shadow-md rounded p-4 border border-gray-200 flex flex-col justify-between">
       <div className="flex justify-between items-start mb-2">
         <h2 className="text-lg font-semibold text-gray-800 truncate">{title}</h2>
 
