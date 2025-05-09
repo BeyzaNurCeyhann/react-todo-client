@@ -1,12 +1,85 @@
-# React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# React Todo Client
 
-Currently, two official plugins are available:
+Bu proje, Laravel tabanlı bir API ile entegre çalışan bir React Todo uygulamasıdır. Kullanıcılar görevlerini yönetebilir, kategorilere ayırabilir ve rollerine göre yetkilendirilebilirler.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Özellikler
 
-## Expanding the ESLint configuration
+- JWT tabanlı kimlik doğrulama
+- Rol bazlı yetkilendirme (admin ve user)
+- Görevleri listeleme, ekleme, güncelleme ve silme
+- Kategorilere göre görevleri filtreleme
+- Kullanıcı dostu arayüz ve gezinme
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+##  Kurulum
+
+1. Depoyu klonlayın:
+```bash
+git clone https://github.com/BeyzaNurCeyhann/react-todo-client.git
+cd react-todo-client
+```
+
+2. Bağımlılıkları yükleyin:
+```bash
+npm install
+```
+
+3. Ortam değişkenlerini ayarlayın:
+```bash
+cp .env.example .env
+```
+
+`.env` dosyasında API URL'sini belirtin:
+```env
+VITE_API_URL=http://localhost:8000/api
+```
+
+4. Uygulamayı başlatın:
+```bash
+npm run dev
+```
+
+##Kimlik Doğrulama ve Yetkilendirme
+
+- Kullanıcılar, e-posta ve şifre ile giriş yaparlar.
+- Giriş başarılı olduğunda, API'den alınan JWT token ve kullanıcı bilgileri `localStorage`'a kaydedilir:
+```javascript
+localStorage.setItem('token', response.data.data.token);
+localStorage.setItem('user', JSON.stringify(response.data.data.user));
+```
+
+- Uygulama, kullanıcı rolüne göre erişim kontrolü sağlar. Örneğin, sadece `admin` rolüne sahip kullanıcılar "Kategoriler" sayfasını görebilir.
+
+##Proje Yapısı
+
+```
+react-todo-client/
+├── public/
+├── src/
+│   ├── components/
+│   │   ├── Navbar.jsx
+│   │   └── ...
+│   ├── pages/
+│   │   ├── LoginPage.jsx
+│   │   ├── Dashboard.jsx
+│   │   └── ...
+│   ├── services/
+│   │   ├── authService.js
+│   │   └── ...
+│   ├── App.jsx
+│   └── main.jsx
+├── .env.example
+├── package.json
+└── ...
+```
+
+## Test Kullanıcıları
+
+| Rol   | E-posta             | Şifre    |
+|-------|---------------------|----------|
+| Admin | admin@example.com   | password |
+| User  | user@example.com    | password |
+
+## Lisans
+
+Bu proje MIT lisansı ile lisanslanmıştır. Daha fazla bilgi için [LICENSE](LICENSE) dosyasını inceleyebilirsiniz.
